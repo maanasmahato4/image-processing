@@ -35,7 +35,20 @@ async function userExists(user) {
     };
 };
 
+async function saveRefreshToken(refresh_token){
+    try {
+        const savedRefreshTokenToDatabase = await pool.query('INSERT INTO REFRESH_TOKENS (REFRESH_TOKEN) VALUES ($1) RETURNING *', [refresh_token]);
+        if (savedRefreshTokenToDatabase.rows[0].refresh_token !== refresh_token) {
+            throw new Error("refresh token could not be saved in the database");
+        };
+        return savedRefreshTokenToDatabase.rows[0];
+    } catch (error) {
+        console.log(error);
+    };
+};
+
 module.exports = {
     addUser,
-    userExists
+    userExists,
+    saveRefreshToken
 };
