@@ -6,7 +6,7 @@ const helmet = require("helmet");
 
 // custom files imports
 const corsOptions = require("./config/cors.config");
-const errorHandler = require("./utils/errorHandler.middleware");
+const errorHandler = require("./utils/errorHandler");
 const databaseConnection = require("./database/database.connection");
 
 // expressjs initialization
