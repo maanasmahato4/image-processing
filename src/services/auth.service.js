@@ -27,7 +27,7 @@ async function userExists(user) {
     try {
         const userExists = await pool.query('SELECT EMAIL FROM USERS WHERE EMAIL=$1', [user.email]);
         if (userExists.rows[0].email === user.email) {
-            return true;
+            return userExists.rows[0];
         } else {
             return false;
         };
@@ -37,7 +37,24 @@ async function userExists(user) {
     };
 };
 
-async function saveRefreshToken(refresh_token){
+async function verifyUser(user) {
+    try {
+        const existingUser = await userExists(user);
+        if (!existingUser) {
+            throw new Error("user does not exist");
+        }
+        const verifyPassword = await comparePassword(user.password, existingUser.password);
+        if (!verifyPassword) {
+            throw new Error("wrong credentials");
+        }
+        return existingUser;
+    } catch (error) {
+        console.log(error);
+        throw new Error(error);
+    };
+};
+
+async function saveRefreshToken(refresh_token) {
     try {
         const savedRefreshTokenToDatabase = await pool.query('INSERT INTO REFRESH_TOKENS (REFRESH_TOKEN) VALUES ($1) RETURNING *', [refresh_token]);
         if (savedRefreshTokenToDatabase.rows[0].refresh_token !== refresh_token) {
@@ -53,5 +70,6 @@ async function saveRefreshToken(refresh_token){
 module.exports = {
     addUser,
     userExists,
-    saveRefreshToken
+    saveRefreshToken,
+    verifyUser
 };
