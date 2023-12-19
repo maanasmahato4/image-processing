@@ -1,8 +1,10 @@
 // 3rd party libraries
 const jwt = require("jsonwebtoken");
+const pool = require("../database/database");
 
 function generateAccessToken(user) {
     try {
+     
         const access_token = jwt.sign(
             // user credentials to be stored in the token
             {
@@ -19,13 +21,16 @@ function generateAccessToken(user) {
 
         return access_token;
     } catch (error) {
-        console.log(error);
         throw new Error(error);
     };
 };
 
-function generateRefreshToken(user) {
+async function generateRefreshToken(user) {
     try {
+        const tokenExist = await pool.query('SELECT * FROM REFRESH_TOKENS WHERE UID=$1', [user.id]);
+        if(!tokenExist){
+            await pool.query('DELETE FROM REFRESH_TOKENS WHERE UID=$1', [user.id]);
+        };
         const refresh_token = jwt.sign(
             // users creds to be stored in the token
             {
@@ -41,7 +46,6 @@ function generateRefreshToken(user) {
         );
         return refresh_token;
     } catch (error) {
-        console.log(error);
         throw new Error(error);
     };
 };

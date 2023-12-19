@@ -11,7 +11,7 @@ const {
 } = require("../services/auth.service");
 
 const {
-    generateAccessToken, generateRefreshToken, verifyAccessToken
+    generateAccessToken, generateRefreshToken, verifyRefreshToken
 } = require("../services/jwt.service");
 
 const {
@@ -50,16 +50,16 @@ async function SignInUser(request, response) {
     try {
         const { email, password } = request.body;
         const userVerified = await verifyUser({ email, password });
-        const [access_token, refresh_token] = await Promise.all([generateAccessToken(userVerified), generateRefereshToken(userVerified)]);
+        const [access_token, refresh_token] = await Promise.all([generateAccessToken(userVerified), generateRefreshToken(userVerified)]);
         if (!access_token || !refresh_token) {
             return internalServerError(request, response, { message: "error generating user tokens" });
         };
-        const savedToken = await saveRefreshToken(refresh_token);
+        const savedToken = await saveRefreshToken({uid: userVerified.id, refresh_token});
         if (!savedToken.refresh_token) {
-            return internalServerError(request, response, { message: "refresh token not saved" });
+            return await internalServerError(request, response, { message: "refresh token not saved" });
         };
         await response.cookie("jwt", savedToken.refresh_token, { httpOnly: true, secure: false, maxAge: 24 * 60 * 60 * 1000 });
-        return access_token;
+        return response.status(200).json({status: "success", access_token});
     } catch (error) {
         return await internalServerError(request, response, error);
     };
@@ -73,6 +73,7 @@ async function SignOutUser(request, response) {
         };
         await deleteRefreshToken(cookies?.jwt);
         await response.clearCookie("jwt");
+        return await response.status(200).json({status: "success"});
     } catch (error) {
         return await internalServerError(request, response, error);
     };
@@ -82,17 +83,17 @@ async function RefreshAccessToken(request, response) {
     try {
         const cookies = request.cookies;
         if (!cookies?.jwt) {
-            return notFoundError(request, response, { message: "jwt not found" });
+            return await notFoundError(request, response, { message: "jwt not found" });
         };
-        const user = verifyAccessToken(cookies?.jwt);
+        const user = await verifyRefreshToken(cookies?.jwt);
         if (!user.email) {
-            return internalServerError(request, response, { message: "user email not recieved after decoding the refresh token" });
+            return await internalServerError(request, response, { message: "user email not recieved after decoding the refresh token" });
         };
         const access_token = generateAccessToken(user);
         if (!access_token) {
-            return internalServerError(request, response, { message: "access_token was not created" });
+            return await internalServerError(request, response, { message: "access_token was not created" });
         };
-        return access_token;
+        return response.status(200).json({status: "succes", access_token});
     } catch (error) {
         return await internalServerError(request, response, error);
     };

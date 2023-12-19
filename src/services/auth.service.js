@@ -24,11 +24,11 @@ async function addUser(user) {
 
 async function userExists(user) {
     try {
-        const userExists = await pool.query('SELECT EMAIL FROM USERS WHERE EMAIL=$1', [user.email]);
+        const userExists = await pool.query('SELECT * FROM USERS WHERE EMAIL=$1', [user.email]);
         if (userExists.rows[0]?.email !== user.email) {
             return false;
         };
-        return user;
+        return userExists.rows[0];
     } catch (error) {
         throw new Error(error);
     };
