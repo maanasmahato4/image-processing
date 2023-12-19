@@ -67,9 +67,23 @@ async function saveRefreshToken(refresh_token) {
     };
 };
 
+async function deleteRefreshToken(refresh_token) {
+    try {
+        const tokenDeleted = await pool.query('DELETE FROM REFRESH_TOKENS WHERE REFRESH_TOKEN=$1', [refresh_token]);
+        if (!tokenDeleted) {
+            throw new Error("token was not removed");
+        }
+        return true;
+    } catch (error) {
+        console.log(error);
+        throw new Error(error);
+    };
+};
+
 module.exports = {
     addUser,
     userExists,
     saveRefreshToken,
-    verifyUser
+    verifyUser,
+    deleteRefreshToken
 };
