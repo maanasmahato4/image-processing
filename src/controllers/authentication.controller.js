@@ -7,7 +7,8 @@ const {
     addUser,
     userExists,
     verifyUser,
-    saveRefreshToken
+    saveRefreshToken,
+    deleteRefreshToken
 } = require("../services/auth.service");
 
 const {
@@ -17,7 +18,7 @@ const {
 const {
     internalServerError,
     conflictError,
-    badRequestError
+    notFoundError
 } = require("../shared/errors/errorFunctions");
 
 async function RegisterUser(request, response) {
@@ -67,9 +68,14 @@ async function SignInUser(request, response) {
 
 async function SignOutUser(request, response) {
     try {
-
+        const cookies = request.cookies;
+        if (cookies?.jwt) {
+            return notFoundError(request, response, { message: "jwt not found" });
+        };
+        await deleteRefreshToken(cookies?.jwt);
+        await response.clearCookie("jwt");
     } catch (error) {
-
+        return await internalServerError(request, response, error);
     };
 };
 
