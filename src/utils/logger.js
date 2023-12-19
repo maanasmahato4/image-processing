@@ -11,7 +11,7 @@ const devLogFormat = printf(({ level, message, timestamp, stack }) => {
 });
 
 // underdevelopment logger
-function underDevelopmentLogger() {
+function underDevelopmentLogger(fileName) {
     return winston.createLogger({
         level: "info",
         format: combine(
@@ -34,14 +34,17 @@ const prodLogFormat = printf(({ level, message, timestamp }) => {
 });
 
 // production logger
-function productionLogger() {
+function productionLogger(fileName) {
     return winston.createLogger({
         level: "info",
         format: combine(
             label({ label: "production" }),
             timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
             prodLogFormat
-        )
+        ),
+        transports: [
+            new winston.transports.File({ dirname: "logs", filename: fileName })
+        ]
     });
 };
 
