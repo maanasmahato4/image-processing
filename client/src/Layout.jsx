@@ -1,14 +1,15 @@
 import { AppShell } from "@mantine/core";
 import App from "./App";
+import NavigationMenu from "./components/NavigationMenu/NavigationMenu";
 
 function Layout() {
     return (
-        <AppShell header={{height: 60}}>
+        <AppShell header={{ height: 60 }}>
             <AppShell.Header>
-                <h1>header</h1>
+                <NavigationMenu />
             </AppShell.Header>
             <AppShell.Main>
-                <App/>
+                <App />
             </AppShell.Main>
         </AppShell>
     )
