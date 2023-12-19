@@ -7,7 +7,9 @@ const { printf, combine, timestamp, label, errors } = winston.format;
 const devLogFormat = printf(({ level, message, timestamp, stack }) => {
     if (stack) {
         return `${timestamp} ${level}: ${message}\n${stack}`;
-    };
+    } else {
+        return `${timestamp} ${level}: ${message}`;
+    }
 });
 
 // underdevelopment logger
@@ -45,7 +47,7 @@ const productionLogger = winston.createLogger({
 });
 
 let logger = null;
-if (process.env.NODE_ENV === "development") {
+if (process.env.NODE_ENV == "development") {
     logger = underDevelopmentLogger;
 } else {
     logger = productionLogger;

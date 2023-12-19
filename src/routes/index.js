@@ -18,3 +18,7 @@ router
     .post("/auth/signin", SignInUser)
     .post("/auth/signout", SignOutUser)
     .post("/auth/refresh", RefreshAccessToken)
+
+
+
+module.exports = router;

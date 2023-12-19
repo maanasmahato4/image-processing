@@ -24,7 +24,7 @@ function generateAccessToken(user) {
     };
 };
 
-function generateRefereshToken(user) {
+function generateRefreshToken(user) {
     try {
         const refresh_token = jwt.sign(
             // users creds to be stored in the token
@@ -66,7 +66,7 @@ async function verifyRefreshToken(refresh_token) {
 
 module.exports = {
     generateAccessToken,
-    generateRefereshToken,
+    generateRefreshToken,
     verifyAccessToken,
     verifyRefreshToken
 };

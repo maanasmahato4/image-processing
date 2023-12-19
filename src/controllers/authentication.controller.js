@@ -11,7 +11,7 @@ const {
 } = require("../services/auth.service");
 
 const {
-    generateAccessToken, generateRefereshToken, verifyAccessToken
+    generateAccessToken, generateRefreshToken, verifyAccessToken
 } = require("../services/jwt.service");
 
 const {
@@ -23,24 +23,24 @@ const {
 async function RegisterUser(request, response) {
     try {
         const { email, password } = request.body;
-        const exists = userExists({ email });
+        const exists = await userExists({ email });
         if (exists) {
-            return conflictError(request, response, { message: "user already exists" });
+            return await conflictError(request, response, { message: "user already exists" });
         };
         const userSaved = await addUser({ email, password });
         if (userSaved.email !== email) {
-            return internalServerError(request, response, { message: "error saving user to the database" })
+            return await internalServerError(request, response, { message: "error saving user to the database" })
         };
-        const [access_token, refresh_token] = await Promise.all([generateAccessToken(userSaved), generateRefereshToken(userSaved)]);
+        const [access_token, refresh_token] = await Promise.all([generateAccessToken(userSaved), generateRefreshToken(userSaved)]);
         if (!access_token || !refresh_token) {
-            return internalServerError(request, response, { message: "error generating user tokens" });
+            return await internalServerError(request, response, { message: "error generating user tokens" });
         };
-        const savedToken = await saveRefreshToken(refresh_token);
+        const savedToken = await saveRefreshToken({ uid: userSaved.id, refresh_token });
         if (!savedToken.refresh_token) {
-            return internalServerError(request, response, { message: "refresh token not saved" });
+            return await internalServerError(request, response, { message: "refresh token not saved" });
         };
         await response.cookie("jwt", savedToken.refresh_token, { httpOnly: true, secrue: false, maxAge: 24 * 60 * 60 * 1000 });
-        return access_token;
+        return await response.status(200).json({ status: "success", access_token });
     } catch (error) {
         return internalServerError(request, response, error);
     };
@@ -58,7 +58,7 @@ async function SignInUser(request, response) {
         if (!savedToken.refresh_token) {
             return internalServerError(request, response, { message: "refresh token not saved" });
         };
-        await response.cookie("jwt", savedToken.refresh_token, { httpOnly: true, secrue: false, maxAge: 24 * 60 * 60 * 1000 });
+        await response.cookie("jwt", savedToken.refresh_token, { httpOnly: true, secure: false, maxAge: 24 * 60 * 60 * 1000 });
         return access_token;
     } catch (error) {
         return await internalServerError(request, response, error);
