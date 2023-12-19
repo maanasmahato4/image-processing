@@ -13,6 +13,7 @@ async function verifyUser(request, response, next) {
         const access_token = authorizationHeader.split(' ')[1];
         jwt.verify(
             access_token,
+            process.env.ACCESS_TOKEN_SECRET,
             (err, decoded) => {
                 if (err) {
                     return badRequestError(request, response, err);

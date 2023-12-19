@@ -11,7 +11,7 @@ const {
 } = require("../services/auth.service");
 
 const {
-    generateAccessToken, generateRefereshToken
+    generateAccessToken, generateRefereshToken, verifyAccessToken
 } = require("../services/jwt.service");
 
 const {
@@ -68,7 +68,7 @@ async function SignInUser(request, response) {
 async function SignOutUser(request, response) {
     try {
         const cookies = request.cookies;
-        if (cookies?.jwt) {
+        if (!cookies?.jwt) {
             return notFoundError(request, response, { message: "jwt not found" });
         };
         await deleteRefreshToken(cookies?.jwt);
@@ -80,9 +80,21 @@ async function SignOutUser(request, response) {
 
 async function RefreshAccessToken(request, response) {
     try {
-
+        const cookies = request.cookies;
+        if (!cookies?.jwt) {
+            return notFoundError(request, response, { message: "jwt not found" });
+        };
+        const user = verifyAccessToken(cookies?.jwt);
+        if (!user.email) {
+            return internalServerError(request, response, { message: "user email not recieved after decoding the refresh token" });
+        };
+        const access_token = generateAccessToken(user);
+        if (!access_token) {
+            return internalServerError(request, response, { message: "access_token was not created" });
+        };
+        return access_token;
     } catch (error) {
-
+        return await internalServerError(request, response, error);
     };
 };
 

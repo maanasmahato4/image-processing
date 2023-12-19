@@ -1,5 +1,5 @@
 // 3rd party libraries
-
+const jwt = require("jsonwebtoken");
 
 // custom file imports
 const pool = require("../database/database");
@@ -80,10 +80,26 @@ async function deleteRefreshToken(refresh_token) {
     };
 };
 
+async function verifyRefreshToken(refresh_token) {
+    try {
+        return jwt.verify(refresh_token, process.env.REFRESH_TOKEN_SECRET,
+            (err, decoded) => {
+                if (err) {
+                    throw new Error(err);
+                };
+                return decoded;
+            });
+    } catch (error) {
+        console.log(error);
+        throw new Error(error);
+    };
+};
+
 module.exports = {
     addUser,
     userExists,
     saveRefreshToken,
     verifyUser,
-    deleteRefreshToken
+    deleteRefreshToken,
+    verifyRefreshToken
 };
