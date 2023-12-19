@@ -6,6 +6,7 @@
 const {
     addUser,
     userExists,
+    verifyUser,
     saveRefreshToken
 } = require("../services/auth.service");
 
@@ -15,7 +16,8 @@ const {
 
 const {
     internalServerError,
-    conflictError
+    conflictError,
+    badRequestError
 } = require("../shared/errors/errorFunctions");
 
 async function RegisterUser(request, response) {
@@ -23,31 +25,43 @@ async function RegisterUser(request, response) {
         const { email, password } = request.body;
         const exists = userExists({ email });
         if (exists) {
-            return conflictError(request, response, "user already exists");
+            return conflictError(request, response, { message: "user already exists" });
         };
         const userSaved = await addUser({ email, password });
         if (userSaved.email !== email) {
-            return internalServerError(request, response, "error saving user to the database")
+            return internalServerError(request, response, { message: "error saving user to the database" })
         };
         const [access_token, refresh_token] = await Promise.all([generateAccessToken(userSaved), generateRefereshToken(userSaved)]);
         if (!access_token || !refresh_token) {
-            return internalServerError(request, response, "error generating user tokens");
+            return internalServerError(request, response, { message: "error generating user tokens" });
         };
         const savedToken = await saveRefreshToken(refresh_token);
         if (!savedToken.refresh_token) {
-            return internalServerError(request, response, "refresh token not saved");
+            return internalServerError(request, response, { message: "refresh token not saved" });
         };
+        await response.cookie("jwt", savedToken.refresh_token, { httpOnly: true, secrue: false, maxAge: 24 * 60 * 60 * 1000 });
         return access_token;
     } catch (error) {
-        return internalServerError(request, response, error.message);
+        return internalServerError(request, response, error);
     };
 };
 
 async function SignInUser(request, response) {
     try {
-
+        const { email, password } = request.body;
+        const userVerified = await verifyUser({ email, password });
+        const [access_token, refresh_token] = await Promise.all([generateAccessToken(userVerified), generateRefereshToken(userVerified)]);
+        if (!access_token || !refresh_token) {
+            return internalServerError(request, response, { message: "error generating user tokens" });
+        };
+        const savedToken = await saveRefreshToken(refresh_token);
+        if (!savedToken.refresh_token) {
+            return internalServerError(request, response, { message: "refresh token not saved" });
+        };
+        await response.cookie("jwt", savedToken.refresh_token, { httpOnly: true, secrue: false, maxAge: 24 * 60 * 60 * 1000 });
+        return access_token;
     } catch (error) {
-
+        return await internalServerError(request, response, error);
     };
 };
 
