@@ -19,6 +19,7 @@ async function addUser(user) {
         return savedUser.rows[0];
     } catch (error) {
         console.log(error);
+        throw new Error(error);
     };
 };
 
@@ -32,6 +33,7 @@ async function userExists(user) {
         };
     } catch (error) {
         console.log(error);
+        throw new Error(error);
     };
 };
 
@@ -44,6 +46,7 @@ async function saveRefreshToken(refresh_token){
         return savedRefreshTokenToDatabase.rows[0];
     } catch (error) {
         console.log(error);
+        throw new Error(error);
     };
 };
 

@@ -20,6 +20,7 @@ function generateAccessToken(user) {
         return access_token;
     } catch (error) {
         console.log(error);
+        throw new Error(error);
     };
 };
 
@@ -41,6 +42,7 @@ function generateRefereshToken(user) {
         return refresh_token;
     } catch (error) {
         console.log(error);
+        throw new Error(error);
     };
 };
 

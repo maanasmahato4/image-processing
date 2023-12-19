@@ -7,25 +7,34 @@ const {
     BAD_REQUEST_EXCEPTION
 } = require("../constants/exceptions.constants");
 
+const {
+    logger
+} = require("../../utils/logger");
 
-function internalServerError(response, message) {
-    return response.status(500).json({ error: INTERNAL_SERVER_EXCEPTION, message });
+
+function internalServerError(request, response, error) {
+    logger.error(`${req.method} ${request.url}`, error);
+    return response.status(500).json({ error: INTERNAL_SERVER_EXCEPTION, message: error.message });
 };
 
-function conflictError(response, message) {
-    return response.status(409).json({ error: CONFLICT_EXCEPTION, message });
+function conflictError(request, response, error) {
+    logger.error(`${req.method} ${request.url}`, error);
+    return response.status(409).json({ error: CONFLICT_EXCEPTION, message: error.message });
 };
 
-function notFoundError(response, message) {
-    return response.status(404).json({ error: NOT_FOUND_EXCEPTION, message });
+function notFoundError(request, response, error) {
+    logger.error(`${req.method} ${request.url}`, error);
+    return response.status(404).json({ error: NOT_FOUND_EXCEPTION, message: error.message });
 };
 
-function invalidError(response, message) {
-    return response.status(422).json({ error: INVALID_EXCEPTION, message });
+function invalidError(request, response, error) {
+    logger.error(`${req.method} ${request.url}`, error);
+    return response.status(422).json({ error: INVALID_EXCEPTION, message: error.message });
 };
 
-function badRequestError(response, message){
-    return response.status(400).json({error: BAD_REQUEST_EXCEPTION, message });
+function badRequestError(request, response, error) {
+    logger.error(`${req.method} ${request.url}`, error);
+    return response.status(400).json({ error: BAD_REQUEST_EXCEPTION, message: error.message });
 };
 
 module.exports = {

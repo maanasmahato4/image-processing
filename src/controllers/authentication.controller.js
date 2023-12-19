@@ -23,23 +23,23 @@ async function RegisterUser(request, response) {
         const { email, password } = request.body;
         const exists = userExists({ email });
         if (exists) {
-            return conflictError(response, "user already exists");
+            return conflictError(request, response, "user already exists");
         };
         const userSaved = await addUser({ email, password });
         if (userSaved.email !== email) {
-            return internalServerError(response, "error saving user to the database")
+            return internalServerError(request, response, "error saving user to the database")
         };
         const [access_token, refresh_token] = await Promise.all([generateAccessToken(userSaved), generateRefereshToken(userSaved)]);
         if (!access_token || !refresh_token) {
-            return internalServerError(response, "error generating user tokens");
+            return internalServerError(request, response, "error generating user tokens");
         };
         const savedToken = await saveRefreshToken(refresh_token);
         if (!savedToken.refresh_token) {
-            return internalServerError(response, "refresh token not saved");
+            return internalServerError(request, response, "refresh token not saved");
         };
         return access_token;
     } catch (error) {
-        return internalServerError(response, error.message);
+        return internalServerError(request, response, error.message);
     };
 };
 
