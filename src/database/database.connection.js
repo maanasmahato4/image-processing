@@ -9,7 +9,6 @@ async function databaseConnectionCheck() {
         console.log(`${currentTime.rows[0].current_time}: database connected`);
         return true;
     } catch (error) {
-        console.log(error);
         logger.error(`Database connection error`, error)
     };
 };
