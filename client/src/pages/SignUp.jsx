@@ -21,7 +21,7 @@ function SignUp() {
     });
 
     useEffect(() => {
-        console.log("protected route is left in login");
+        console.log("protected route is left in signup");
     }, []);
 
     return (
@@ -31,10 +31,13 @@ function SignUp() {
                 <TextInput label="Email" type="email" name="email" placeholder="abc@example.com" {...signUpForm.getInputProps("email", { type: "input" })} withAsterisk />
                 <TextInput label="Password" type="password" name="password" placeholder="password must be at least 8 characters long" {...signUpForm.getInputProps("password", { type: "input" })} withAsterisk />
                 <TextInput label="Confirm Password" type="password" name="confirm_password" placeholder="password must be at least 8 characters long" {...signUpForm.getInputProps("confirm_password", { type: "input" })} withAsterisk />
-                <Button.Group style={{ marginBlock: "0.7rem" }}>
-                    <Button type="submit" color="blue">Submit</Button>
-                    <Button type="reset" color="red">Clear</Button>
-                </Button.Group>
+                <Flex style={{ marginBlock: "0.7rem" }} justify={"space-between"}>
+                    <Button.Group >
+                        <Button type="submit" color="blue">Submit</Button>
+                        <Button type="reset" color="red">Clear</Button>
+                    </Button.Group>
+                    <Button onClick={() => useNavigate("/signin")}>Already have an account?</Button>
+                </Flex>
             </form>
         </Container>
     )
