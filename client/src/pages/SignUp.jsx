@@ -36,7 +36,7 @@ function SignUp() {
                         <Button type="submit" color="blue">Submit</Button>
                         <Button type="reset" color="red">Clear</Button>
                     </Button.Group>
-                    <Button onClick={() => useNavigate("/signin")}>Already have an account?</Button>
+                    <Button onClick={() => navigate("/signin")}>Already have an account?</Button>
                 </Flex>
             </form>
         </Container>
