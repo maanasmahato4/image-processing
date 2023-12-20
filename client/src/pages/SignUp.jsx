@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Container, TextInput } from "@mantine/core";
+import { Button, Container, TextInput, Flex } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { EMAIL_REGEXP } from "../constants/RegExp";
 
