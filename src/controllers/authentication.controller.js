@@ -25,22 +25,22 @@ async function RegisterUser(request, response) {
         const { email, password } = request.body;
         const exists = await userExists({ email });
         if (exists) {
-            return await conflictError(request, response, { message: "user already exists" });
+            return conflictError(request, response, { message: "user already exists" });
         };
         const userSaved = await addUser({ email, password });
         if (userSaved.email !== email) {
-            return await internalServerError(request, response, { message: "error saving user to the database" })
+            return internalServerError(request, response, { message: "error saving user to the database" })
         };
         const [access_token, refresh_token] = await Promise.all([generateAccessToken(userSaved), generateRefreshToken(userSaved)]);
         if (!access_token || !refresh_token) {
-            return await internalServerError(request, response, { message: "error generating user tokens" });
+            return internalServerError(request, response, { message: "error generating user tokens" });
         };
         const savedToken = await saveRefreshToken({ uid: userSaved.id, refresh_token });
         if (!savedToken.refresh_token) {
-            return await internalServerError(request, response, { message: "refresh token not saved" });
+            return internalServerError(request, response, { message: "refresh token not saved" });
         };
-        await response.cookie("jwt", savedToken.refresh_token, { httpOnly: true, secrue: false, maxAge: 24 * 60 * 60 * 1000 });
-        return await response.status(200).json({ status: "success", access_token });
+        response.cookie("jwt", savedToken.refresh_token, { httpOnly: true, secure: false, maxAge: 24 * 60 * 60 * 1000 });
+        return response.status(200).json({ status: "success", access_token });
     } catch (error) {
         return internalServerError(request, response, error);
     };
@@ -54,12 +54,12 @@ async function SignInUser(request, response) {
         if (!access_token || !refresh_token) {
             return internalServerError(request, response, { message: "error generating user tokens" });
         };
-        const savedToken = await saveRefreshToken({uid: userVerified.id, refresh_token});
+        const savedToken = await saveRefreshToken({ uid: userVerified.id, refresh_token });
         if (!savedToken.refresh_token) {
             return await internalServerError(request, response, { message: "refresh token not saved" });
         };
         await response.cookie("jwt", savedToken.refresh_token, { httpOnly: true, secure: false, maxAge: 24 * 60 * 60 * 1000 });
-        return response.status(200).json({status: "success", access_token});
+        return response.status(200).json({ status: "success", access_token });
     } catch (error) {
         return await internalServerError(request, response, error);
     };
@@ -73,7 +73,7 @@ async function SignOutUser(request, response) {
         };
         await deleteRefreshToken(cookies?.jwt);
         await response.clearCookie("jwt");
-        return await response.status(200).json({status: "success"});
+        return await response.status(200).json({ status: "success" });
     } catch (error) {
         return await internalServerError(request, response, error);
     };
@@ -93,7 +93,7 @@ async function RefreshAccessToken(request, response) {
         if (!access_token) {
             return await internalServerError(request, response, { message: "access_token was not created" });
         };
-        return response.status(200).json({status: "succes", access_token});
+        return response.status(200).json({ status: "succes", access_token });
     } catch (error) {
         return await internalServerError(request, response, error);
     };

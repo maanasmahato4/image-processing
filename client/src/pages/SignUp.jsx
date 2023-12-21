@@ -1,11 +1,15 @@
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Container, TextInput, Flex } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { EMAIL_REGEXP } from "../constants/RegExp";
+import { privateAPI } from "../api/axios";
+import { validatePassword } from "../helpers/validatePassword";
+import { AppContext } from "../context/context";
 
 function SignUp() {
     const navigate = useNavigate();
+    const { setAccessToken, isAuthenticated, setIsAuthenticated } = useContext(AppContext);
 
     const signUpForm = useForm({
         initialValues: {
@@ -20,14 +24,33 @@ function SignUp() {
         }
     });
 
+    async function handleSignUpFormSubmit(values) {
+        try {
+            const user = validatePassword(values);
+            const response = await privateAPI.post("/auth/register", user);
+            if (!response || response.status != 200) {
+                throw new Error(`$Error ${response ? response.status : 'No response'}`);
+            };
+            const { status, access_token } = response.data;
+            if (status === "success") {
+                setAccessToken(access_token);
+                setIsAuthenticated(true);
+            };
+        } catch (error) {
+            console.error('An error occured', error);
+        };
+    };
+
     useEffect(() => {
-        console.log("protected route is left in signup");
-    }, []);
+        if (isAuthenticated) {
+            navigate("/");
+        }
+    }, [isAuthenticated]);
 
     return (
         <Container>
             <h1 style={{ textAlign: "center" }}>Make a new account</h1>
-            <form onSubmit={signUpForm.onSubmit((values) => console.log(values))} style={{ width: "60%", marginInline: "20%", marginBlock: "2rem" }} onReset={signUpForm.onReset}>
+            <form onSubmit={signUpForm.onSubmit((values) => handleSignUpFormSubmit(values))} style={{ width: "60%", marginInline: "20%", marginBlock: "2rem" }} onReset={signUpForm.onReset}>
                 <TextInput label="Email" type="email" name="email" placeholder="abc@example.com" {...signUpForm.getInputProps("email", { type: "input" })} withAsterisk />
                 <TextInput label="Password" type="password" name="password" placeholder="password must be at least 8 characters long" {...signUpForm.getInputProps("password", { type: "input" })} withAsterisk />
                 <TextInput label="Confirm Password" type="password" name="confirm_password" placeholder="password must be at least 8 characters long" {...signUpForm.getInputProps("confirm_password", { type: "input" })} withAsterisk />
