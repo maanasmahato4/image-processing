@@ -8,7 +8,7 @@ function generateAccessToken(user) {
         const access_token = jwt.sign(
             // user credentials to be stored in the token
             {
-                username: user.email.split('@')[0],
+                username: user.username,
                 email: user.email
             },
             // access token secret
@@ -28,7 +28,7 @@ function generateAccessToken(user) {
 async function generateRefreshToken(user) {
     try {
         const tokenExist = await pool.query('SELECT * FROM REFRESH_TOKENS WHERE UID=$1', [user.id]);
-        if(!tokenExist){
+        if(tokenExist){
             await pool.query('DELETE FROM REFRESH_TOKENS WHERE UID=$1', [user.id]);
         };
         const refresh_token = jwt.sign(
