@@ -34,7 +34,9 @@ router
 
 router
     .post("/image/png", allowedMimeTypes(['.png', '.jpg', '.jpeg', '.webp']), uploadToStorage.single('image'), convertToPNG)
-
+    .post("/image/jpg", allowedMimeTypes(['.png', '.jpg', '.jpeg', '.webp']), uploadToStorage.single('image'), convertToJPG)
+    .post("/image/webp", allowedMimeTypes(['.png', '.jpg', '.jpeg', '.webp']), uploadToStorage.single('image'), convertToWEBP)
+    .post("/image/gif", allowedMimeTypes(['.png', '.jpg', '.jpeg', '.webp']), uploadToStorage.single('image'), convertToGIF)
 
 
 module.exports = router;
