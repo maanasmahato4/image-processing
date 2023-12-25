@@ -9,7 +9,7 @@ const cookieParser = require("cookie-parser");
 const corsOptions = require("./config/cors.config");
 const errorHandler = require("./utils/errorHandler");
 const databaseConnection = require("./database/database.connection");
-const { createUsersTable, createRefreshTokenTable } = require("./database/databaseTables");
+const { createUsersTable, createRefreshTokenTable, createImagesTables } = require("./database/databaseTables");
 
 // expressjs initialization
 const app = express();
@@ -18,6 +18,7 @@ const app = express();
 databaseConnection();
 createRefreshTokenTable();
 createUsersTable();
+createImagesTables();
 
 
 // middlewares
@@ -27,7 +28,10 @@ app.use(cookieParser());
 app.use(express.json());
 
 // routes
+app.use("/uploads", express.static("./uploads"));
+app.use("/processed_uploads", express.static("./processedUploads"));
 app.use("/api", require("./routes/index"));
+
 // error handler
 app.use(errorHandler);
 
