@@ -13,7 +13,8 @@ const linkStyle = {
 function NavigationMenu() {
     return (
         <Container display="flex">
-            <Link style={linkStyle} to="/">Home</Link>
+            <Link style={linkStyle} to="/">Convert</Link>
+            <Link style={linkStyle} to="/custom">Custom</Link>
             <Link style={linkStyle} to="/signup">SignUp</Link>
             <Link style={linkStyle} to="/signin">SignIn</Link>
             <Link style={linkStyle} to="/storage">My Files</Link>

@@ -1,8 +1,12 @@
-function Home(){
+import { Container } from "@mantine/core";
+import { Outlet } from "react-router-dom";
+
+function Home() {
     return (
-        <h1>home</h1>
+        <Container style={{ display: 'flex', justifyContent: 'center', height: '100vh' }}>
+            <Outlet />
+        </Container>
     )
 };
-
 
 export default Home;

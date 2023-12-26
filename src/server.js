@@ -10,6 +10,13 @@ const corsOptions = require("./config/cors.config");
 const errorHandler = require("./utils/errorHandler");
 const databaseConnection = require("./database/database.connection");
 const { createUsersTable, createRefreshTokenTable, createImagesTables } = require("./database/databaseTables");
+const { deleteFilesInUploadsDirectory, deleteFilesInProcessedUploadsDirectory } = require("./utils/deleteFiles");
+
+// files clean up functions
+setInterval(async () => {
+    await deleteFilesInUploadsDirectory();
+    await deleteFilesInProcessedUploadsDirectory();
+}, 60 * 60 * 1000); // executes every hour
 
 // expressjs initialization
 const app = express();
