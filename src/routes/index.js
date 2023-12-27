@@ -13,7 +13,9 @@ const {
     convertToPNG,
     convertToJPG,
     convertToWEBP,
-    convertToGIF
+    convertToGIF,
+    deleteImage,
+    downloadFile
 } = require("../controllers/image_processing.controller");
 
 const verifyJWT = require("../middlewares/verify_jwt.middleware");
@@ -37,6 +39,8 @@ router
     .post("/image/jpg", allowedMimeTypes(['.png', '.jpg', '.jpeg', '.webp']), uploadToStorage.single('image'), convertToJPG)
     .post("/image/webp", allowedMimeTypes(['.png', '.jpg', '.jpeg', '.webp']), uploadToStorage.single('image'), convertToWEBP)
     .post("/image/gif", allowedMimeTypes(['.png', '.jpg', '.jpeg', '.webp']), uploadToStorage.single('image'), convertToGIF)
+    .post("/image/:publicId", deleteImage)
+    .post("/image/:publicId", downloadFile)
 
 
 module.exports = router;

@@ -11,6 +11,7 @@ const {
     uploadToCloudinary,
     deleteFromCloudinary
 } = require("./cloudinary.service");
+const cloudinary = require("../config/cloudinary.config");
 
 // create folder if not exists
 const outPutDir = path.join(__dirname, "../../processedUploads");
@@ -20,12 +21,18 @@ if (!fs.existsSync(outPutDir)) {
 
 // directory path for saving processed images
 const dir_path = path.join(__dirname, "../../processedUploads");
-if (!fs.existsSync(dir_path)) {
-    fs.mkdirSync(dir_path, { recursive: true });
-};
 
 async function saveToDatabase(uid, org_public_id, pro_public_id, original_image_secure_url, processed_image_secure_url) {
     return await pool.query('INSERT INTO IMAGES (UID, ORG_PUBLIC_ID, PRO_PUBLIC_ID, ORIGINAL_FILE_URL, PROCESSED_FILE_URL) VALUES ($1, $2, $3, $4, $5) RETURNING *', [uid, org_public_id, pro_public_id, original_image_secure_url, processed_image_secure_url]);
+};
+
+async function downloadImage(publicId){
+    try {
+        const url = cloudinary.url(publicId);
+        return url;
+    } catch (error) {
+        throw new Error(error);
+    };
 };
 
 async function deleteFromDatabase(collection) {
@@ -41,6 +48,7 @@ async function deleteFromDatabase(collection) {
         if (!deletedFromDatabase) {
             throw new Error("error deleting collection from the database");
         };
+        return true;
     } catch (error) {
         throw new Error(error);
     };
@@ -167,5 +175,6 @@ module.exports = {
     JPG_Converter,
     WEBP_Converter,
     GIF_Converter,
-    deleteFromDatabase
+    deleteFromDatabase,
+    downloadImage
 };
