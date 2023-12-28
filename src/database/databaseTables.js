@@ -4,7 +4,7 @@
 const pool = require("../database/database");
 
 async function createImagesTables(){
-    return await pool.query('CREATE TABLE IF NOT EXISTS IMAGES (ID SERIAL PRIMARY KEY, UID INT, ORIGINAL_FILE_URL TEXT, PROCESSED_FILE_URL TEXT)');   
+    return await pool.query('CREATE TABLE IF NOT EXISTS IMAGES (ID SERIAL PRIMARY KEY, ORIGINAL_FILE_URL TEXT, PROCESSED_FILE_URL TEXT)');   
 };
 
 module.exports = {

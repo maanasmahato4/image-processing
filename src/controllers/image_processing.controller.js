@@ -12,7 +12,7 @@ const {
 
 async function convertToPNG(request, response) {
     try {
-        const urls = await PNG_Converter({ uid: request.body.uid, file: request.file });
+        const urls = await PNG_Converter({ file: request.file });
         return response.status(200).json({ success: true, urls });
     } catch (error) {
         return internalServerError(request, response, error);
@@ -21,7 +21,7 @@ async function convertToPNG(request, response) {
 
 async function convertToJPG(request, response) {
     try {
-        const urls = await JPG_Converter({ uid: request.body.uid, file: request.file });
+        const urls = await JPG_Converter({ file: request.file });
         return response.status(200).json({ success: true, urls });
     } catch (error) {
         return internalServerError(request, response, error);
@@ -30,7 +30,7 @@ async function convertToJPG(request, response) {
 
 async function convertToWEBP(request, response) {
     try {
-        const urls = await WEBP_Converter({ uid: request.user?.id, file: request.file });
+        const urls = await WEBP_Converter({ file: request.file });
         return response.status(200).json({ success: true, urls });
     } catch (error) {
         return internalServerError(request, response, error);
@@ -39,7 +39,7 @@ async function convertToWEBP(request, response) {
 
 async function convertToGIF(request, response) {
     try {
-        const urls = await GIF_Converter({ uid: request.user?.id, file: request.file });
+        const urls = await GIF_Converter({ file: request.file });
         return response.status(200).json({ success: true, urls });
     } catch (error) {
         return internalServerError(request, response, error);

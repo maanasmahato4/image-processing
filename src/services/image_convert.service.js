@@ -20,11 +20,11 @@ if (!fs.existsSync(outPutDir)) {
 // directory path for saving processed images
 const dir_path = path.join(__dirname, "../../processedUploads");
 
-async function saveToDatabase(uid, org_public_id, pro_public_id, original_image_secure_url, processed_image_secure_url) {
-    return await pool.query('INSERT INTO IMAGES (UID, ORG_PUBLIC_ID, PRO_PUBLIC_ID, ORIGINAL_FILE_URL, PROCESSED_FILE_URL) VALUES ($1, $2, $3, $4, $5) RETURNING *', [uid, org_public_id, pro_public_id, original_image_secure_url, processed_image_secure_url]);
+async function saveToDatabase(org_public_id, pro_public_id, original_image_secure_url, processed_image_secure_url) {
+    return await pool.query('INSERT INTO IMAGES (ORG_PUBLIC_ID, PRO_PUBLIC_ID, ORIGINAL_FILE_URL, PROCESSED_FILE_URL) VALUES ($1, $2, $3, $4) RETURNING *', [org_public_id, pro_public_id, original_image_secure_url, processed_image_secure_url]);
 };
 
-async function PNG_Converter({ uid, file }) {
+async function PNG_Converter({ file }) {
     try {
         const image = sharp(file.path).png();
         const file_name = `${file.originalname.split('.')[0]}.${image.options.formatOut}`;
@@ -43,7 +43,7 @@ async function PNG_Converter({ uid, file }) {
         if (!original_image || !processed_image) {
             throw new Error("error uploading image in the cloudinary");
         }
-        const savedInDatabase = await saveToDatabase(uid, original_image.public_id, processed_image.public_id, original_image.secure_url, processed_image.secure_url);
+        const savedInDatabase = await saveToDatabase(original_image.public_id, processed_image.public_id, original_image.secure_url, processed_image.secure_url);
         if (savedInDatabase.rows < 1) {
             throw new Error("error saving to database");
         };
@@ -53,7 +53,7 @@ async function PNG_Converter({ uid, file }) {
     };
 };
 
-async function JPG_Converter({ uid, file }) {
+async function JPG_Converter({ file }) {
     try {
         const image = sharp(file.path).jpeg();
         const file_name = `${file.originalname.split('.')[0]}.${image.options.formatOut}`;
@@ -72,7 +72,7 @@ async function JPG_Converter({ uid, file }) {
         if (!original_image || !processed_image) {
             throw new Error("error uploading image in the cloudinary");
         }
-        const savedInDatabase = await saveToDatabase(uid, original_image.public_id, processed_image.public_id, original_image.secure_url, processed_image.secure_url);
+        const savedInDatabase = await saveToDatabase(original_image.public_id, processed_image.public_id, original_image.secure_url, processed_image.secure_url);
         if (savedInDatabase.rows < 1) {
             throw new Error("error saving to database");
         };
@@ -82,7 +82,7 @@ async function JPG_Converter({ uid, file }) {
     };
 };
 
-async function WEBP_Converter({ uid, file }) {
+async function WEBP_Converter({ file }) {
     try {
         const image = sharp(file.path).webp();
         const file_name = `${file.originalname.split('.')[0]}.${image.options.formatOut}`;
@@ -101,7 +101,7 @@ async function WEBP_Converter({ uid, file }) {
         if (!original_image || !processed_image) {
             throw new Error("error uploading image in the cloudinary");
         }
-        const savedInDatabase = await saveToDatabase(uid, original_image.public_id, processed_image.public_id, original_image.secure_url, processed_image.secure_url);
+        const savedInDatabase = await saveToDatabase(original_image.public_id, processed_image.public_id, original_image.secure_url, processed_image.secure_url);
         if (savedInDatabase.rows < 1) {
             throw new Error("error saving to database");
         };
@@ -111,7 +111,7 @@ async function WEBP_Converter({ uid, file }) {
     };
 };
 
-async function GIF_Converter({ uid, file }) {
+async function GIF_Converter({ file }) {
     try {
         const image = sharp(file.path, { animated: true }).gif();
         const file_name = `${file.originalname.split('.')[0]}.${image.options.formatOut}`;
@@ -130,7 +130,7 @@ async function GIF_Converter({ uid, file }) {
         if (!original_image || !processed_image) {
             throw new Error("error uploading image in the cloudinary");
         }
-        const savedInDatabase = await saveToDatabase(uid, original_image.public_id, processed_image.public_id, original_image.secure_url, processed_image.secure_url);
+        const savedInDatabase = await saveToDatabase(original_image.public_id, processed_image.public_id, original_image.secure_url, processed_image.secure_url);
         if (savedInDatabase.rows < 1) {
             throw new Error("error saving to database");
         };
