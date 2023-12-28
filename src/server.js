@@ -3,7 +3,6 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
-const cookieParser = require("cookie-parser");
 
 // custom files imports
 const corsOptions = require("./config/cors.config");
@@ -29,7 +28,6 @@ createImagesTables();
 // middlewares
 app.use(cors(corsOptions));
 app.use(helmet());
-app.use(cookieParser());
 app.use(express.json());
 
 // routes
