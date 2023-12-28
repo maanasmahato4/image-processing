@@ -1,3 +1,4 @@
+import axios from "axios";
 import {
     Button,
     Container,
@@ -9,21 +10,20 @@ import {
 } from "@mantine/core";
 import { useState } from "react";
 import { publicAPI } from "../api/axios";
-import axios from "axios";
+
 
 function ConvertImage() {
     const [image, setImage] = useState(null);
     const [convertType, setConvertType] = useState("jpg");
     const [isLoading, setIsLoading] = useState(null);
-    const [urls, setUrls] = useState({ id: 0, uid: 0, org_public_id: "", pro_public_id: "", original_file_url: "", processed_file_url: "" })
-
+    const [urls, setUrls] = useState({ id: 0, org_public_id: "", pro_public_id: "", original_file_url: "", processed_file_url: "" })
 
     async function handleSubmit(event) {
         event.preventDefault();
         const formData = new FormData;
         formData.append("image", image);
         setIsLoading(true);
-        const response = await publicAPI.post(`/image/${convertType}`, formData, {
+        const response = await publicAPI.post(`/convert/${convertType}`, formData, {
             headers: {
                 "Content-Type": "multipart/form-data"
             },

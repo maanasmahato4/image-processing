@@ -8,10 +8,8 @@ const sharp = require("sharp");
 // custom imports
 const pool = require("../database/database");
 const {
-    uploadToCloudinary,
-    deleteFromCloudinary
+    uploadToCloudinary
 } = require("./cloudinary.service");
-const cloudinary = require("../config/cloudinary.config");
 
 // create folder if not exists
 const outPutDir = path.join(__dirname, "../../processedUploads");
@@ -24,34 +22,6 @@ const dir_path = path.join(__dirname, "../../processedUploads");
 
 async function saveToDatabase(uid, org_public_id, pro_public_id, original_image_secure_url, processed_image_secure_url) {
     return await pool.query('INSERT INTO IMAGES (UID, ORG_PUBLIC_ID, PRO_PUBLIC_ID, ORIGINAL_FILE_URL, PROCESSED_FILE_URL) VALUES ($1, $2, $3, $4, $5) RETURNING *', [uid, org_public_id, pro_public_id, original_image_secure_url, processed_image_secure_url]);
-};
-
-async function downloadImage(publicId){
-    try {
-        const url = cloudinary.url(publicId);
-        return url;
-    } catch (error) {
-        throw new Error(error);
-    };
-};
-
-async function deleteFromDatabase(collection) {
-    try {
-        const { id, uid, org_public_id, pro_public_id, original_image_secure_url, processed_image_secure_url } = collection;
-        const delete_original_image = await deleteFromCloudinary(org_public_id);
-        const delete_processed_image = await deleteFromCloudinary(pro_public_id);
-        const [deleted_org, deleted_pro] = await Promise.all([delete_original_image, delete_processed_image]);
-        if (!deleted_org || !deleted_pro) {
-            throw new Error("error deleting images from cloudinary");
-        };
-        const deletedFromDatabase = await pool.query('DELETE FROM IMAGES WHERE ID=$1', [id]);
-        if (!deletedFromDatabase) {
-            throw new Error("error deleting collection from the database");
-        };
-        return true;
-    } catch (error) {
-        throw new Error(error);
-    };
 };
 
 async function PNG_Converter({ uid, file }) {
@@ -174,7 +144,5 @@ module.exports = {
     PNG_Converter,
     JPG_Converter,
     WEBP_Converter,
-    GIF_Converter,
-    deleteFromDatabase,
-    downloadImage
+    GIF_Converter
 };

@@ -9,7 +9,7 @@ const cookieParser = require("cookie-parser");
 const corsOptions = require("./config/cors.config");
 const errorHandler = require("./utils/errorHandler");
 const databaseConnection = require("./database/database.connection");
-const { createUsersTable, createRefreshTokenTable, createImagesTables } = require("./database/databaseTables");
+const { createImagesTables } = require("./database/databaseTables");
 const { deleteFilesInUploadsDirectory, deleteFilesInProcessedUploadsDirectory } = require("./utils/deleteFiles");
 
 // files clean up functions
@@ -23,8 +23,6 @@ const app = express();
 
 // database connection
 databaseConnection();
-createRefreshTokenTable();
-createUsersTable();
 createImagesTables();
 
 
